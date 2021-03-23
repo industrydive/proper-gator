@@ -1,7 +1,0 @@
-{
-  "python.formatting.blackPath": "poetry run black",
-  "python.linting.flake8Enabled": true,
-  "python.linting.flake8Path": "poetry run flake8",
-  "python.linting.enabled": true,
-  "python.sortImports.path": "poetry run isort ."
-}
