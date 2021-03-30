@@ -13,6 +13,21 @@ def get_variables(service, workspace):
     return variables
 
 
+def create_variable(service, workspace, variable_body):
+    new_variable = execute(
+        service.accounts()
+        .containers()
+        .workspaces()
+        .variables()
+        .create(parent=workspace["path"], body=variable_body)
+    )
+    print(
+        f"Created {variable_body['name']} in "
+        f"{workspace['name']} - {workspace['containerId']}"
+    )
+    return new_variable
+
+
 def clone_variables(service, target_workspace, destination_workspace):
     """For each variable in the target_workspace, create a variable in each of the
     destination workspaces. If
@@ -58,14 +73,3 @@ def create_variable_body(variable):
         if k not in non_mutable_keys:
             body[k] = v
     return body
-
-
-def create_variable(service, workspace, variable_body):
-    new_variable = execute(
-        service.accounts()
-        .containers()
-        .workspaces()
-        .variables()
-        .create(parent=workspace["path"], body=variable_body)
-    )
-    return new_variable

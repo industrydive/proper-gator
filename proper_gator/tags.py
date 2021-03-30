@@ -13,6 +13,21 @@ def get_tags(service, workspace):
     return tags
 
 
+def create_tag(service, workspace, tag_body):
+    new_tag = execute(
+        service.accounts()
+        .containers()
+        .workspaces()
+        .tags()
+        .create(parent=workspace["path"], body=tag_body)
+    )
+    print(
+        f"Created {tag_body['name']} in "
+        f"{workspace['name']} - {workspace['containerId']}"
+    )
+    return new_tag
+
+
 def clone_tags(
     service, target_workspace, destination_workspace, trigger_mapping, variable_mapping
 ):
@@ -63,14 +78,3 @@ def create_tag_body(tag, trigger_mapping):
                     mapped_triggers = trigger_mapping[i]
                 body[k] = mapped_triggers
     return body
-
-
-def create_tag(service, workspace, tag_body):
-    new_tag = execute(
-        service.accounts()
-        .containers()
-        .workspaces()
-        .tags()
-        .create(parent=workspace["path"], body=tag_body)
-    )
-    return new_tag

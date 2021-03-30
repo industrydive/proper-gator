@@ -21,6 +21,10 @@ def create_trigger(service, workspace, trigger_body):
         .triggers()
         .create(parent=workspace["path"], body=trigger_body)
     )
+    print(
+        f"Created {trigger_body['name']} in "
+        f"{workspace['name']} - {workspace['containerId']}"
+    )
     return new_trigger
 
 
