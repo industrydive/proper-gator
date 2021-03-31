@@ -19,11 +19,24 @@ def get_service(credentials):
     return service
 
 
+# Google limits us to 15 calls per minute (60 seconds)
+API_CALLS = 15
+API_PERIOD = 60
+
+
 @sleep_and_retry
-@limits(calls=15, period=60)
+@limits(calls=API_CALLS, period=API_PERIOD)
 def execute(resource):
+    """A helper function to call the execute method of Google API resources.
+    Wraps with a sleep_and_retry + limits decorator from ratelimit
+
+    :param resource: A resource object from Google API
+    :type resource: googleapiclient.discovery.Resource
+    :return: A dict representing the response from the Google API
+    :rtype: dict
+    """
     try:
-        resource.execute()
+        return resource.execute()
     except HttpError as err:
         error = json.loads(err.content)
         print(error)

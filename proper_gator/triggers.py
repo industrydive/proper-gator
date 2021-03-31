@@ -2,6 +2,15 @@ from proper_gator.service import execute
 
 
 def get_triggers(service, workspace):
+    """Get all variables that exist in a given workspace
+
+    :param service: The Google service object
+    :type service: googleapiclient.discovery.Resource
+    :param workspace: A Google Tag Manager workspace
+    :type workspace: dict
+    :return: A collection of triggers in the Google Tag Manager List Response format
+    :rtype: dict
+    """
     triggers = execute(
         service.accounts()
         .containers()
@@ -14,6 +23,19 @@ def get_triggers(service, workspace):
 
 
 def create_trigger(service, workspace, trigger_body):
+    """Create a trigger in a given workspace
+
+    https://googleapis.github.io/google-api-python-client/docs/dyn/tagmanager_v2.accounts.containers.workspaces.triggers.html#create
+
+    :param service: The Google service object
+    :type service: googleapiclient.discovery.Resource
+    :param workspace: A Google Tag Manager workspace
+    :type workspace: dict
+    :param trigger_body: The request body that the trigger should be created with
+    :type trigger_body: dict
+    :return: The created trigger
+    :rtype: dict
+    """
     new_trigger = execute(
         service.accounts()
         .containers()
@@ -32,12 +54,15 @@ def clone_triggers(service, target_workspace, destination_workspace):
     """For each trigger in the target_workspace, create a trigger in each of the
     destination workspaces. If
 
-    :param service: [description]
-    :type service: [type]
-    :param target_workspace: [description]
-    :type target_workspace: [type]
-    :param destination_workspaces: [description]
-    :type destination_workspaces: [type]
+    :param service: The Google service object
+    :type service: googleapiclient.discovery.Resource
+    :param target_workspace: The Google Tag Manager workspace to clone triggers from
+    :type target_workspace: dict
+    :param destination_workspace: A Google Tag Manager workspace to clone triggers to
+    :type destination_workspace: dict
+    :return: A mapping of the trigger ids from the target workspace to the trigger ids
+             in the destination workspace.
+    :rtype: dict
     """
     trigger_mapping = {}
     triggers_wrapper = get_triggers(service, target_workspace)
