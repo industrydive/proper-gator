@@ -22,6 +22,25 @@ def get_triggers(service, workspace):
     return triggers
 
 
+def find_trigger(trigger_wrapper, trigger_name):
+    """Search through a collection of triggers and return the trigger
+    with the given name
+
+    :param trigger_wrapper: A collection of triggers in the Google Tag Manager
+                              List Response format
+    :type trigger_wrapper: dict
+    :param trigger_name: The name of a trigger to find
+    :type trigger_name: str
+    :return: A Google Tag Manager trigger
+    :rtype: dict
+    """
+    if "trigger" in trigger_wrapper:
+        for trigger in trigger_wrapper["trigger"]:
+            if trigger["name"] == trigger_name:
+                return trigger
+    return None
+
+
 def create_trigger(service, workspace, trigger_body):
     """Create a trigger in a given workspace
 
@@ -66,10 +85,15 @@ def clone_triggers(service, target_workspace, destination_workspace):
     """
     trigger_mapping = {}
     triggers_wrapper = get_triggers(service, target_workspace)
+    existing_triggers_wrapper = get_triggers(service, destination_workspace)
     for trigger in triggers_wrapper["trigger"]:
-        trigger_body = create_trigger_body(trigger)
-        new_trigger = create_trigger(service, destination_workspace, trigger_body)
-        trigger_mapping[trigger["triggerId"]] = new_trigger["triggerId"]
+        found = find_trigger(existing_triggers_wrapper, trigger["name"])
+        if not found:
+            trigger_body = create_trigger_body(trigger)
+            new_trigger = create_trigger(service, destination_workspace, trigger_body)
+            trigger_mapping[trigger["triggerId"]] = new_trigger["triggerId"]
+        else:
+            trigger_mapping[trigger["triggerId"]] = found["triggerId"]
     return trigger_mapping
 
 

@@ -54,9 +54,10 @@ def find_workspace(workspace_wrapper, workspace_name):
     :return: A Google Tag Manager workspace
     :rtype: dict
     """
-    for workspace in workspace_wrapper["workspace"]:
-        if workspace["name"] == workspace_name:
-            return workspace
+    if "workspace" in workspace_wrapper:
+        for workspace in workspace_wrapper["workspace"]:
+            if workspace["name"] == workspace_name:
+                return workspace
     return None
 
 

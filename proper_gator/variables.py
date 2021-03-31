@@ -45,14 +45,33 @@ def create_variable(service, workspace, variable_body):
     )
     print(
         f"Created {variable_body['name']} in "
-        f"{workspace['name']} - {workspace['conta inerId']}"
+        f"{workspace['name']} - {workspace['containerId']}"
     )
     return new_variable
 
 
+def find_variable(variable_wrapper, variable_name):
+    """Search through a collection of variables and return the variable
+    with the given name
+
+    :param variable_wrapper: A collection of variables in the Google Tag Manager
+                              List Response format
+    :type variable_wrapper: dict
+    :param variable_name: The name of a variable to find
+    :type variable_name: str
+    :return: A Google Tag Manager variable
+    :rtype: dict
+    """
+    if "variable" in variable_wrapper:
+        for variable in variable_wrapper["variable"]:
+            if variable["name"] == variable_name:
+                return variable
+    return None
+
+
 def clone_variables(service, target_workspace, destination_workspace):
     """For each variable in the target_workspace, create a variable in each of the
-    destination workspaces.
+    destination workspaces if it does not already exist in the destination workspace.
 
     :param service: The Google service object
     :type service: googleapiclient.discovery.Resource
@@ -66,10 +85,17 @@ def clone_variables(service, target_workspace, destination_workspace):
     """
     variable_mapping = {}
     variables_wrapper = get_variables(service, target_workspace)
+    existing_variables_wrapper = get_variables(service, destination_workspace)
     for variable in variables_wrapper["variable"]:
-        variable_body = create_variable_body(variable)
-        new_variable = create_variable(service, destination_workspace, variable_body)
-        variable_mapping[variable["variableId"]] = new_variable["variableId"]
+        found = find_variable(existing_variables_wrapper, variable["name"])
+        if not found:
+            variable_body = create_variable_body(variable)
+            new_variable = create_variable(
+                service, destination_workspace, variable_body
+            )
+            variable_mapping[variable["variableId"]] = new_variable["variableId"]
+        else:
+            variable_mapping[variable["variableId"]] = found["variableId"]
     return variable_mapping
 
 

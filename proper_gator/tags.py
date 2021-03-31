@@ -24,6 +24,25 @@ def get_tags(service, workspace):
     return tags
 
 
+def find_tag(tag_wrapper, tag_name):
+    """Search through a collection of tags and return the tag
+    with the given name
+
+    :param tag_wrapper: A collection of tags in the Google Tag Manager
+                              List Response format
+    :type tag_wrapper: dict
+    :param tag_name: The name of a tag to find
+    :type tag_name: str
+    :return: A Google Tag Manager tag
+    :rtype: dict
+    """
+    if "tag" in tag_wrapper:
+        for tag in tag_wrapper["tag"]:
+            if tag["name"] == tag_name:
+                return tag
+    return None
+
+
 def create_tag(service, workspace, tag_body):
     """Create a tag in a given workspace
 
@@ -72,9 +91,12 @@ def clone_tags(
     :type variable_mapping: dict
     """
     tags_wrapper = get_tags(service, target_workspace)
+    existing_tags_wrapper = get_tags(service, destination_workspace)
     for tag in tags_wrapper["tag"]:
-        tag_body = create_tag_body(tag, trigger_mapping)
-        create_tag(service, destination_workspace, tag_body)
+        found = find_tag(existing_tags_wrapper, tag["name"])
+        if not found:
+            tag_body = create_tag_body(tag, trigger_mapping)
+            create_tag(service, destination_workspace, tag_body)
 
 
 def create_tag_body(tag, trigger_mapping):
