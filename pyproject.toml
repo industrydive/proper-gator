@@ -19,7 +19,7 @@ flake8 = "^3.9.0"
 isort = "^5.7.0"
 
 [tool.poetry.scripts]
-proper_gator = "proper_gator.cli:main"
+proper_gator = "proper_gator.cli:cli"
 
 [tool.isort]
 profile = "black"

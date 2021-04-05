@@ -72,7 +72,12 @@ def create_tag(service, workspace, tag_body):
 
 
 def clone_tags(
-    service, target_workspace, destination_workspace, trigger_mapping, variable_mapping
+    service,
+    target_workspace,
+    destination_workspace,
+    trigger_mapping,
+    variable_mapping,
+    exclude_tags=None,
 ):
     """For each tag in the target_workspace, create a tag in each of the
     destination workspaces.
@@ -89,14 +94,20 @@ def clone_tags(
     :param variable_mapping: A mapping of the variables that exist on the target
                             workspace to the destination workspace
     :type variable_mapping: dict
+    :param exclude_tags: A list of tags to exclude from being cloned
+    :type exclude_tags: list
     """
+    if not exclude_tags:
+        exclude_tags = []
+
     tags_wrapper = get_tags(service, target_workspace)
     existing_tags_wrapper = get_tags(service, destination_workspace)
     for tag in tags_wrapper["tag"]:
-        found = find_tag(existing_tags_wrapper, tag["name"])
-        if not found:
-            tag_body = create_tag_body(tag, trigger_mapping)
-            create_tag(service, destination_workspace, tag_body)
+        if tag["name"] not in exclude_tags:
+            found = find_tag(existing_tags_wrapper, tag["name"])
+            if not found:
+                tag_body = create_tag_body(tag, trigger_mapping)
+                create_tag(service, destination_workspace, tag_body)
 
 
 def create_tag_body(tag, trigger_mapping):

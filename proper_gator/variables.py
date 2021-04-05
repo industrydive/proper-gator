@@ -69,7 +69,9 @@ def find_variable(variable_wrapper, variable_name):
     return None
 
 
-def clone_variables(service, target_workspace, destination_workspace):
+def clone_variables(
+    service, target_workspace, destination_workspace, exclude_variables=None
+):
     """For each variable in the target_workspace, create a variable in each of the
     destination workspaces if it does not already exist in the destination workspace.
 
@@ -79,23 +81,29 @@ def clone_variables(service, target_workspace, destination_workspace):
     :type target_workspace: dict
     :param destination_workspace: A Google Tag Manager workspace to clone variables to
     :type destination_workspace: dict
+    :param exclude_variables: A list of variables to exclude from being cloned
+    :type exclude_variables: list
     :return: A mapping of the variable ids from the target workspace to the variable ids
              in the destination workspace.
     :rtype: dict
     """
+    if not exclude_variables:
+        exclude_variables = []
+
     variable_mapping = {}
     variables_wrapper = get_variables(service, target_workspace)
     existing_variables_wrapper = get_variables(service, destination_workspace)
     for variable in variables_wrapper["variable"]:
-        found = find_variable(existing_variables_wrapper, variable["name"])
-        if not found:
-            variable_body = create_variable_body(variable)
-            new_variable = create_variable(
-                service, destination_workspace, variable_body
-            )
-            variable_mapping[variable["variableId"]] = new_variable["variableId"]
-        else:
-            variable_mapping[variable["variableId"]] = found["variableId"]
+        if not variable["name"] in exclude_variables:
+            found = find_variable(existing_variables_wrapper, variable["name"])
+            if not found:
+                variable_body = create_variable_body(variable)
+                new_variable = create_variable(
+                    service, destination_workspace, variable_body
+                )
+                variable_mapping[variable["variableId"]] = new_variable["variableId"]
+            else:
+                variable_mapping[variable["variableId"]] = found["variableId"]
     return variable_mapping
 
 

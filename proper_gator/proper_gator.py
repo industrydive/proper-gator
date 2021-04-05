@@ -23,16 +23,22 @@ from settings import ACCOUNT_ID
 #                 return resource
 
 
-def main():
-    container_name = "Biopharma Dive"
-    workspace_name = "proper_gator_staging"
-
+def clone(
+    container_name="Biopharma Dive",
+    workspace_name="proper_gator_staging",
+    exclude_containers=None,
+    exclude_variables=None,
+    exclude_triggers=None,
+    exclude_tags=None,
+):
     credentials = get_credentials()
     service = get_service(credentials)
 
     containers = get_containers(service, ACCOUNT_ID)
     target_container = find_target_container(containers, container_name)
-    destination_containers = find_destination_containers(containers, target_container)
+    destination_containers = find_destination_containers(
+        containers, target_container, exclude_containers
+    )
 
     target_container_workspaces = get_workspaces(service, target_container)
     target_workspace = find_workspace(target_container_workspaces, workspace_name)
@@ -42,10 +48,10 @@ def main():
 
     for destination_workspace in destination_workspaces:
         variable_mapping = clone_variables(
-            service, target_workspace, destination_workspace
+            service, target_workspace, destination_workspace, exclude_variables
         )
         trigger_mapping = clone_triggers(
-            service, target_workspace, destination_workspace
+            service, target_workspace, destination_workspace, exclude_triggers
         )
         clone_tags(
             service,
@@ -53,4 +59,5 @@ def main():
             destination_workspace,
             trigger_mapping,
             variable_mapping,
+            exclude_tags,
         )

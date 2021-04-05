@@ -69,7 +69,9 @@ def create_trigger(service, workspace, trigger_body):
     return new_trigger
 
 
-def clone_triggers(service, target_workspace, destination_workspace):
+def clone_triggers(
+    service, target_workspace, destination_workspace, exclude_triggers=None
+):
     """For each trigger in the target_workspace, create a trigger in each of the
     destination workspaces if it does not already exist in the destination workspace.
 
@@ -79,21 +81,29 @@ def clone_triggers(service, target_workspace, destination_workspace):
     :type target_workspace: dict
     :param destination_workspace: A Google Tag Manager workspace to clone triggers to
     :type destination_workspace: dict
+    :param exclude_triggers: A list of triggers to exclude from being cloned
+    :type exclude_triggers: list
     :return: A mapping of the trigger ids from the target workspace to the trigger ids
              in the destination workspace.
     :rtype: dict
     """
+    if not exclude_triggers:
+        exclude_triggers = []
+
     trigger_mapping = {}
     triggers_wrapper = get_triggers(service, target_workspace)
     existing_triggers_wrapper = get_triggers(service, destination_workspace)
     for trigger in triggers_wrapper["trigger"]:
-        found = find_trigger(existing_triggers_wrapper, trigger["name"])
-        if not found:
-            trigger_body = create_trigger_body(trigger)
-            new_trigger = create_trigger(service, destination_workspace, trigger_body)
-            trigger_mapping[trigger["triggerId"]] = new_trigger["triggerId"]
-        else:
-            trigger_mapping[trigger["triggerId"]] = found["triggerId"]
+        if not trigger["name"] in exclude_triggers:
+            found = find_trigger(existing_triggers_wrapper, trigger["name"])
+            if not found:
+                trigger_body = create_trigger_body(trigger)
+                new_trigger = create_trigger(
+                    service, destination_workspace, trigger_body
+                )
+                trigger_mapping[trigger["triggerId"]] = new_trigger["triggerId"]
+            else:
+                trigger_mapping[trigger["triggerId"]] = found["triggerId"]
     return trigger_mapping
 
 
