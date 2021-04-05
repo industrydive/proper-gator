@@ -71,7 +71,7 @@ def create_trigger(service, workspace, trigger_body):
 
 def clone_triggers(service, target_workspace, destination_workspace):
     """For each trigger in the target_workspace, create a trigger in each of the
-    destination workspaces. If
+    destination workspaces if it does not already exist in the destination workspace.
 
     :param service: The Google service object
     :type service: googleapiclient.discovery.Resource
