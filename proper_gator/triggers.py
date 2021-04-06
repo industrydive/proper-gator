@@ -91,19 +91,20 @@ def clone_triggers(
         exclude_triggers = []
 
     trigger_mapping = {}
-    triggers_wrapper = get_triggers(service, target_workspace)
-    existing_triggers_wrapper = get_triggers(service, destination_workspace)
-    for trigger in triggers_wrapper["trigger"]:
-        if not trigger["name"] in exclude_triggers:
-            found = find_trigger(existing_triggers_wrapper, trigger["name"])
-            if not found:
-                trigger_body = create_trigger_body(trigger)
-                new_trigger = create_trigger(
-                    service, destination_workspace, trigger_body
-                )
-                trigger_mapping[trigger["triggerId"]] = new_trigger["triggerId"]
-            else:
-                trigger_mapping[trigger["triggerId"]] = found["triggerId"]
+    trigger_wrapper = get_triggers(service, target_workspace)
+    if "trigger" in trigger_wrapper:
+        existing_trigger_wrapper = get_triggers(service, destination_workspace)
+        for trigger in trigger_wrapper["trigger"]:
+            if not trigger["name"] in exclude_triggers:
+                found = find_trigger(existing_trigger_wrapper, trigger["name"])
+                if not found:
+                    trigger_body = create_trigger_body(trigger)
+                    new_trigger = create_trigger(
+                        service, destination_workspace, trigger_body
+                    )
+                    trigger_mapping[trigger["triggerId"]] = new_trigger["triggerId"]
+                else:
+                    trigger_mapping[trigger["triggerId"]] = found["triggerId"]
     return trigger_mapping
 
 

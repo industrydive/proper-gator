@@ -100,14 +100,15 @@ def clone_tags(
     if not exclude_tags:
         exclude_tags = []
 
-    tags_wrapper = get_tags(service, target_workspace)
-    existing_tags_wrapper = get_tags(service, destination_workspace)
-    for tag in tags_wrapper["tag"]:
-        if tag["name"] not in exclude_tags:
-            found = find_tag(existing_tags_wrapper, tag["name"])
-            if not found:
-                tag_body = create_tag_body(tag, trigger_mapping)
-                create_tag(service, destination_workspace, tag_body)
+    tag_wrapper = get_tags(service, target_workspace)
+    if "tag" in tag_wrapper:
+        existing_tag_wrapper = get_tags(service, destination_workspace)
+        for tag in tag_wrapper["tag"]:
+            if tag["name"] not in exclude_tags:
+                found = find_tag(existing_tag_wrapper, tag["name"])
+                if not found:
+                    tag_body = create_tag_body(tag, trigger_mapping)
+                    create_tag(service, destination_workspace, tag_body)
 
 
 def create_tag_body(tag, trigger_mapping):
