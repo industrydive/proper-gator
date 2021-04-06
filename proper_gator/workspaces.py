@@ -31,12 +31,11 @@ def create_workspace(service, container, workspace_name):
     :rtype: dict
     """
     workspace_body = {"name": workspace_name}
-    workspace = (
+    workspace = execute(
         service.accounts()
         .containers()
         .workspaces()
         .create(parent=container["path"], body=workspace_body)
-        .execute()
     )
     print(f"Created {workspace_name} in {container['name']}")
     return workspace
