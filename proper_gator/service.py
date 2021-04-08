@@ -2,7 +2,13 @@ import json
 
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
-from ratelimit import limits, sleep_and_retry
+from pyrate_limiter import Duration, Limiter, RequestRate
+
+per_minute_rate = RequestRate(15, Duration.MINUTE)
+per_day_rate = RequestRate(10000, Duration.DAY)
+
+limiter = Limiter(per_minute_rate, per_day_rate)
+identity = "GTM_api"
 
 
 def get_service(credentials):
@@ -19,13 +25,7 @@ def get_service(credentials):
     return service
 
 
-# Google limits us to 15 calls per minute (60 seconds)
-API_CALLS = 15
-API_PERIOD = 60
-
-
-@sleep_and_retry
-@limits(calls=API_CALLS, period=API_PERIOD)
+@limiter.ratelimit(identity, delay=True)
 def execute(resource):
     """A helper function to call the execute method of Google API resources.
     Wraps with a sleep_and_retry + limits decorator from ratelimit
