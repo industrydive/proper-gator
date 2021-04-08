@@ -56,14 +56,18 @@ def clone(
     """
     Clone tags from the target container to other containers in the same account
     """
+
+    def split_and_trim(str):
+        return [s.strip() for s in str.split()]
+
     if exclude_containers:
-        exclude_containers = exclude_containers.split(",")
+        exclude_containers = split_and_trim(exclude_containers)
     if exclude_variables:
-        exclude_variables = exclude_variables.split(",")
+        exclude_variables = split_and_trim(exclude_variables)
     if exclude_triggers:
-        exclude_triggers = exclude_triggers.split(",")
+        exclude_triggers = split_and_trim(exclude_triggers)
     if exclude_tags:
-        exclude_tags = exclude_tags.split(",")
+        exclude_tags = split_and_trim(exclude_tags)
 
     clone_(
         target_container,
