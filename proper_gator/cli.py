@@ -58,7 +58,7 @@ def clone(
     """
 
     def split_and_trim(str):
-        return [s.strip() for s in str.split()]
+        return [s.strip() for s in str.split(",")]
 
     if exclude_containers:
         exclude_containers = split_and_trim(exclude_containers)
