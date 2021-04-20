@@ -10,6 +10,24 @@ def cli():
 
 @cli.command()
 @click.option(
+    "--only-tags",
+    default=None,
+    help="Tags from the target container to be the only tags included in the cloning "
+    "process. Format names of tags separated with commas.",
+)
+@click.option(
+    "--only-triggers",
+    default=None,
+    help="Triggers from the target container to be the only triggers included in the "
+    "cloning process. Format names of triggers separated with commas.",
+)
+@click.option(
+    "--only-variables",
+    default=None,
+    help="Variables from the target container to be the only variables included in the "
+    "cloning process. Format names of variables separated with commas.",
+)
+@click.option(
     "--exclude-tags",
     default=None,
     help="Tags from the target container to exclude from the cloning process. "
@@ -52,6 +70,9 @@ def clone(
     exclude_variables,
     exclude_triggers,
     exclude_tags,
+    only_variables,
+    only_triggers,
+    only_tags,
 ):
     """
     Clone tags from the target container to other containers in the same account
@@ -68,6 +89,12 @@ def clone(
         exclude_triggers = split_and_trim(exclude_triggers)
     if exclude_tags:
         exclude_tags = split_and_trim(exclude_tags)
+    if only_variables:
+        only_variables = split_and_trim(only_variables)
+    if only_triggers:
+        only_triggers = split_and_trim(only_triggers)
+    if only_tags:
+        only_tags = split_and_trim(only_tags)
 
     clone_(
         target_container,
@@ -76,4 +103,7 @@ def clone(
         exclude_variables,
         exclude_triggers,
         exclude_tags,
+        only_variables,
+        only_triggers,
+        only_tags,
     )

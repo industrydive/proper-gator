@@ -78,6 +78,7 @@ def clone_tags(
     trigger_mapping,
     variable_mapping,
     exclude_tags=None,
+    only_tags=None,
 ):
     """For each tag in the target_workspace, create a tag in each of the
     destination workspaces.
@@ -99,12 +100,16 @@ def clone_tags(
     """
     if not exclude_tags:
         exclude_tags = []
+    if not only_tags:
+        only_tags = []
 
     tag_wrapper = get_tags(service, target_workspace)
     if "tag" in tag_wrapper:
         existing_tag_wrapper = get_tags(service, destination_workspace)
         for tag in tag_wrapper["tag"]:
-            if tag["name"] not in exclude_tags:
+            if (tag["name"] not in exclude_tags) and (
+                tag["name"] in only_tags or len(only_tags) == 0
+            ):
                 found = find_tag(existing_tag_wrapper, tag["name"])
                 if not found:
                     tag_body = create_tag_body(tag, trigger_mapping)

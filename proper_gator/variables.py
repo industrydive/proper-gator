@@ -70,7 +70,11 @@ def find_variable(variable_wrapper, variable_name):
 
 
 def clone_variables(
-    service, target_workspace, destination_workspace, exclude_variables=None
+    service,
+    target_workspace,
+    destination_workspace,
+    exclude_variables=None,
+    only_variables=None,
 ):
     """For each variable in the target_workspace, create a variable in each of the
     destination workspaces if it does not already exist in the destination workspace.
@@ -89,13 +93,18 @@ def clone_variables(
     """
     if not exclude_variables:
         exclude_variables = []
+    if not only_variables:
+        only_variables = []
 
     variable_mapping = {}
     variable_wrapper = get_variables(service, target_workspace)
     if "variable" in variable_wrapper:
         existing_variable_wrapper = get_variables(service, destination_workspace)
         for variable in variable_wrapper["variable"]:
-            if not variable["name"] in exclude_variables:
+
+            if (not variable["name"] in exclude_variables) and (
+                variable["name"] in only_variables or len(only_variables) == 0
+            ):
                 found = find_variable(existing_variable_wrapper, variable["name"])
                 if not found:
                     variable_body = create_variable_body(variable)

@@ -30,6 +30,9 @@ def clone(
     exclude_variables=None,
     exclude_triggers=None,
     exclude_tags=None,
+    only_variables=None,
+    only_triggers=None,
+    only_tags=None,
 ):
     credentials = get_credentials()
     service = get_service(credentials)
@@ -48,10 +51,18 @@ def clone(
 
     for destination_workspace in destination_workspaces:
         variable_mapping = clone_variables(
-            service, target_workspace, destination_workspace, exclude_variables
+            service,
+            target_workspace,
+            destination_workspace,
+            exclude_variables,
+            only_variables,
         )
         trigger_mapping = clone_triggers(
-            service, target_workspace, destination_workspace, exclude_triggers
+            service,
+            target_workspace,
+            destination_workspace,
+            exclude_triggers,
+            only_triggers,
         )
         clone_tags(
             service,
@@ -60,4 +71,5 @@ def clone(
             trigger_mapping,
             variable_mapping,
             exclude_tags,
+            only_tags,
         )

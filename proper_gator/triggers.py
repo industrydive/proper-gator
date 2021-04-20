@@ -70,7 +70,11 @@ def create_trigger(service, workspace, trigger_body):
 
 
 def clone_triggers(
-    service, target_workspace, destination_workspace, exclude_triggers=None
+    service,
+    target_workspace,
+    destination_workspace,
+    exclude_triggers=None,
+    only_triggers=None,
 ):
     """For each trigger in the target_workspace, create a trigger in each of the
     destination workspaces if it does not already exist in the destination workspace.
@@ -89,13 +93,17 @@ def clone_triggers(
     """
     if not exclude_triggers:
         exclude_triggers = []
+    if not only_triggers:
+        only_triggers = []
 
     trigger_mapping = {}
     trigger_wrapper = get_triggers(service, target_workspace)
     if "trigger" in trigger_wrapper:
         existing_trigger_wrapper = get_triggers(service, destination_workspace)
         for trigger in trigger_wrapper["trigger"]:
-            if not trigger["name"] in exclude_triggers:
+            if (not trigger["name"] in exclude_triggers) and (
+                trigger["name"] in only_triggers or len(only_triggers) == 0
+            ):
                 found = find_trigger(existing_trigger_wrapper, trigger["name"])
                 if not found:
                     trigger_body = create_trigger_body(trigger)
