@@ -1,4 +1,5 @@
 import json
+import time
 
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
@@ -40,3 +41,10 @@ def execute(resource):
     except HttpError as err:
         error = json.loads(err.content)
         print(error)
+        if error["error"]["code"] == 429:
+            print("Retrying...")
+            # HACK: sometimes the API will return a 429 even with our limiting.
+            # If that happens, just sleep for a minute and retry :(
+            print("Sleeping :)")
+            time.sleep(61)
+            return resource.execute()
