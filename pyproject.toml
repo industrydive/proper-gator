@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "proper-gator"
-version = "0.1.0"
+version = "0.2.0"
 description = ""
 authors = ["Colin Burr <cburr@industrydive.com>"]
 
