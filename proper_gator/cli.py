@@ -59,7 +59,7 @@ def cli():
 )
 @click.option(
     "--target-container",
-    default="Biopharma Dive",
+    default="BioPharma Dive",
     show_default=True,
     help="The container to clone from",
 )

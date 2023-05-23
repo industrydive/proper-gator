@@ -24,7 +24,7 @@ from settings import ACCOUNT_ID
 
 
 def clone(
-    container_name="Biopharma Dive",
+    container_name="BioPharma Dive",
     workspace_name="proper_gator_staging",
     exclude_containers=None,
     exclude_variables=None,
