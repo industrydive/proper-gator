@@ -35,7 +35,7 @@ def find_target_container(container_wrapper, container_name):
 
 
 def find_destination_containers(
-    container_wrapper, target_container, exclude_containers=None
+    container_wrapper, target_container, exclude_containers=None, include_containers=None
 ):
     """Search through a collection of containers and return all containers
     other than the given container
@@ -47,6 +47,7 @@ def find_destination_containers(
                              returned list
     :type target_container: dict
     :param exclude_containers: A list of containers to exclude from being cloned to
+    :param include_containers: A list of containers to include from being cloned to
     :type exclude_containers: list
     :return: A list of Google Tag Manager container objects
     :rtype: list
@@ -55,9 +56,13 @@ def find_destination_containers(
         exclude_containers = []
     destination_containers = []
     for container in container_wrapper["container"]:
+        container_is_target_container = container["containerId"] == target_container["containerId"]
+        container_is_included = container["name"] in include_containers if include_containers else True
+        container_is_excluded = container["name"] in exclude_containers
         if (
-            not container["containerId"] == target_container["containerId"]
-            and container["name"] not in exclude_containers
+            not container_is_target_container
+            and container_is_included
+            and not container_is_excluded
         ):
             destination_containers.append(container)
     return destination_containers

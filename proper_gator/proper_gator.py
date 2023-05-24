@@ -27,6 +27,7 @@ def clone(
     container_name="BioPharma Dive",
     workspace_name="proper_gator_staging",
     exclude_containers=None,
+    include_containers=None,
     exclude_variables=None,
     exclude_triggers=None,
     exclude_tags=None,
@@ -40,7 +41,7 @@ def clone(
     containers = get_containers(service, ACCOUNT_ID)
     target_container = find_target_container(containers, container_name)
     destination_containers = find_destination_containers(
-        containers, target_container, exclude_containers
+        containers, target_container, exclude_containers, include_containers
     )
 
     target_container_workspaces = get_workspaces(service, target_container)
