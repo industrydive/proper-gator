@@ -36,6 +36,7 @@ Versioning
 Authors
 =======
 - Colin Burr - Initial work - `sw3dish <https://github.com/sw3dish>`_
+- Eric Chan - Contributor - `echan217 <https://github.com/echan217>`_
 
 License
 =======
