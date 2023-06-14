@@ -28,7 +28,12 @@ def get_credentials():
             flow = InstalledAppFlow.from_client_secrets_file(
                 "client_secrets.json", SCOPES
             )
-            credentials = flow.run_console()
+            credentials = flow.run_local_server(
+                host='localhost',
+                port=8888,  # temporarily change to unused local port if needed
+                authorization_prompt_message='Please visit this URL: {url}',
+                success_message='The auth flow is complete; you may close this window.',
+                open_browser=True)
         # Save the credentials for the next run
         with open("token.json", "w") as token:
             token.write(credentials.to_json())

@@ -52,6 +52,12 @@ def cli():
     "Format names of containers separated with commas.",
 )
 @click.option(
+    "--include-containers",
+    default=None,
+    help="The only containers to include for the cloning process."
+    "Format names of containers separated with commas.",
+)
+@click.option(
     "--target-workspace",
     default="proper_gator_staging",
     show_default=True,
@@ -59,21 +65,12 @@ def cli():
 )
 @click.option(
     "--target-container",
-    default="Biopharma Dive",
+    default="BioPharma Dive",
     show_default=True,
     help="The container to clone from",
 )
-def clone(
-    target_container,
-    target_workspace,
-    exclude_containers,
-    exclude_variables,
-    exclude_triggers,
-    exclude_tags,
-    only_variables,
-    only_triggers,
-    only_tags,
-):
+def clone(target_container, target_workspace, exclude_containers, include_containers, exclude_variables,
+          exclude_triggers, exclude_tags, only_variables, only_triggers, only_tags):
     """
     Clone tags from the target container to other containers in the same account
     """
@@ -83,6 +80,8 @@ def clone(
 
     if exclude_containers:
         exclude_containers = split_and_trim(exclude_containers)
+    if include_containers:
+        include_containers = split_and_trim(include_containers)
     if exclude_variables:
         exclude_variables = split_and_trim(exclude_variables)
     if exclude_triggers:
@@ -100,6 +99,7 @@ def clone(
         target_container,
         target_workspace,
         exclude_containers,
+        include_containers,
         exclude_variables,
         exclude_triggers,
         exclude_tags,
